@@ -4,26 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Prawdziwe AR (WebXR) - Chodzenie wokół obiektów</title>
-    <!-- Używamy stabilnej wersji A-Frame wspierającej WebXR -->
-    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+    <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
 </head>
 <body style="margin: 0; overflow: hidden;">
 
-    <!-- Dodajemy ar-mode-ui i ustawiamy referenceSpaceType na local-floor -->
-    <a-scene webxr="optionalFeatures: hit-test; referenceSpaceType: local-floor;" ar-mode-ui="enabled: true">
+    <a-scene xr-mode-ui="XRMode: ar" webxr="optionalFeatures: hit-test, local-floor; requiredFeatures: local-floor;">
         
-        <!-- Figury uniesione lekko nad ziemię (y=0 to poziom podłogi dzięki local-floor) -->
-        <a-box position="-1 0.5 -3" rotation="0 45 0" color="#4CC3D9" shadow></a-box>
-        <a-sphere position="0 1.25 -5" radius="1.25" color="#EF2D5E" shadow></a-sphere>
-        <a-cylinder position="1 0.75 -3" radius="0.5" height="1.5" color="#FFC65D" shadow></a-cylinder>
+        <a-box position="-1 0.5 -2" rotation="0 45 0" color="#4CC3D9" shadow></a-box>
+        <a-sphere position="0 1.25 -4" radius="1.25" color="#EF2D5E" shadow></a-sphere>
+        <a-cylinder position="1 0.75 -2" radius="0.5" height="1.5" color="#FFC65D" shadow></a-cylinder>
         
-        <!-- Oświetlenie -->
-        <a-entity light="type: ambient; intensity: 0.6;"></a-entity>
+        <a-entity light="type: ambient; intensity: 0.5;"></a-entity>
         <a-entity light="type: directional; castShadow: true; intensity: 0.8;" position="1 4 1"></a-entity>
 
-        <!-- Prawidłowa konfiguracja kamery dla WebXR AR -->
-        <!-- Usunęliśmy sztywną pozycję "position", aby telefon sam decydował, gdzie jest podłoga i Twoje oczy -->
-        <a-entity camera look-controls></a-entity>
+        <a-entity id="rig" position="0 0 0">
+            <a-entity camera look-controls wasd-controls position="0 1.6 0"></a-entity>
+        </a-entity>
         
     </a-scene>
 
