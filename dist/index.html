@@ -2,24 +2,54 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Naprawione AR - Chodzenie wokół obiektów</title>
-    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prawdziwe AR a'la Pokemon GO</title>
+    <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+    <style>
+        /* Instrukcja na ekranie dla użytkownika */
+        #instruction {
+            position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
+            background: rgba(0,0,0,0.7); color: white; padding: 10px 20px;
+            border-radius: 20px; font-family: sans-serif; text-align: center; z-index: 999;
+        }
+    </style>
 </head>
 <body style="margin: 0; overflow: hidden;">
 
-    <a-scene 
-      webxr="optionalFeatures: local-floor, hit-test; requiredFeatures: local-floor;"
-      xr-mode-ui="enabled: true; XRMode: ar;"
-      renderer="colorManagement: true;">
-        
-        <a-box position="-1 0.5 -2" rotation="0 45 0" color="#4CC3D9"></a-box>
-        <a-sphere position="0 1.25 -3" radius="0.5" color="#EF2D5E"></a-sphere>
-        <a-cylinder position="1 0.75 -2" radius="0.3" height="1" color="#FFC65D"></a-cylinder>
+    <div id="instruction">Skieruj telefon na podłogę i kliknij ekran, gdy pojawi się pierścień, aby postawić rzeźby!</div>
 
-        <a-entity camera look-controls position="0 1.6 0"></a-entity>
+    <a-scene webxr="optionalFeatures: hit-test, local-floor; requiredFeatures: local-floor;" ar-hit-test="target: #rzeźby-grupa; type: footprint;">
+        
+        <a-entity id="rzeźby-grupa" visible="false">
+            <a-box position="-0.5 0.25 0" rotation="0 45 0" scale="0.5 0.5 0.5" color="#4CC3D9"></a-box>
+            <a-sphere position="0 0.7 0" radius="0.4" color="#EF2D5E"></a-sphere>
+            <a-cylinder position="0.5 0.4 0" radius="0.2" height="0.8" color="#FFC65D"></a-cylinder>
+        </a-entity>
+
+        <a-entity camera look-controls raycaster="objects: .clickable"></a-entity>
         
     </a-scene>
 
+    <script>
+        const sceneEl = document.querySelector('a-scene');
+        const rzeźby = document.querySelector('#rzeźby-grupa');
+        const instrukcja = document.querySelector('#instruction');
+
+        // Słuchamy na kliknięcie w ekran podczas trybu AR
+        sceneEl.addEventListener('click', function () {
+            // Pobieramy system AR z WebXR
+            const xrSession = sceneEl.xrSession;
+            if (!xrSession) return;
+
+            // Jeśli system AR znalazł podłogę (hit-test działa pod spodem komponentu ar-hit-test)
+            // Komponent A-Frame automatycznie przesunie grupę '#rzeźby-grupa' w miejsce celownika.
+            // My musimy ją tylko pokazać i zablokować instrukcję.
+            if (rzeźby.getAttribute('visible') === false) {
+                rzeźby.setAttribute('visible', 'true');
+                instrukcja.innerHTML = "Rzeźby postawione! Teraz możesz wokół nich chodzić.";
+                setTimeout(() => { instrukcja.style.display = 'none'; }, 4000);
+            }
+        });
+    </script>
 </body>
 </html>
