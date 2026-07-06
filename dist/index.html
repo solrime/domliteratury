@@ -9,8 +9,12 @@
 <body style="margin: 0; overflow: hidden;">
 
     <a-scene webxr="requiredFeatures: local-floor;">
+        
+        <a-assets>
+            <a-asset-item id="model-rzeźby" src="https://cdn.tinyglb.com/models/481e13724ab6490da93bfedd809e5d8c.glb"></a-asset-item>
+        </a-assets>
  
-        <a-cylinder id="rzezba" radius="0.3" height="1.5" color="#FFC65D" shadow></a-cylinder>
+        <a-gltf-model id="rzezba" src="#model-rzeźby" shadow></a-gltf-model>
         
         <a-entity light="type: ambient; intensity: 0.6;"></a-entity>
         <a-entity light="type: directional; castShadow: true; intensity: 0.8;" position="1 4 1"></a-entity>
@@ -25,23 +29,19 @@
             return Math.random() * (max - min) + min;
         }
 
-        // Czekamy, aż cała scena A-Frame się załaduje
+        // Czekamy na załadowanie sceny
         document.querySelector('a-scene').addEventListener('loaded', function () {
             const rzezba = document.getElementById('rzezba');
 
-            // Losujemy pozycje w metrach od widza (0, 1.6, 0)
-            // X: od -5 (lewo) do 5 (prawo)
-            // Y: od -3 (głęboko pod widzem) do 5 (wysoko nad widzem)
-            // Z: od -5 (przed widzem) do 5 (za widzem)
+            // Losowanie pozycji (X, Y, Z) wokół widza
             const x = losujPrzedzial(-5, 5);
             const y = losujPrzedzial(-3, 5);
             const z = losujPrzedzial(-5, 5);
 
-            // Ustawiamy wylosowaną pozycję dla rzeźby
+            // Ustawienie wylosowanej pozycji dla modelu rzeźby
             rzezba.setAttribute('position', `${x} ${y} ${z}`);
             
-            // Opcjonalnie: logowanie w konsoli, żebyś widział, gdzie tym razem trafiła
-            console.log(`Rzeźba pojawiła się na pozycji: X: ${x.toFixed(2)}, Y: ${y.toFixed(2)}, Z: ${z.toFixed(2)}`);
+            console.log(`Model pojawił się na pozycji: X: ${x.toFixed(2)}, Y: ${y.toFixed(2)}, Z: ${z.toFixed(2)}`);
         });
     </script>
 
