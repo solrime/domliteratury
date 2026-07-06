@@ -24,24 +24,31 @@
     </a-scene>
 
     <script>
-        // Funkcja losująca liczbę z danego przedziału [min, max]
         function losujPrzedzial(min, max) {
             return Math.random() * (max - min) + min;
         }
 
-        // Czekamy na załadowanie sceny
         document.querySelector('a-scene').addEventListener('loaded', function () {
             const rzezba = document.getElementById('rzezba');
 
-            // Losowanie pozycji (X, Y, Z) wokół widza
+            // Losowanie pozycji (X, Y, Z)
             const x = losujPrzedzial(-5, 5);
             const y = losujPrzedzial(-3, 5);
             const z = losujPrzedzial(-5, 5);
 
-            // Ustawienie wylosowanej pozycji dla modelu rzeźby
+            // Ustawienie wylosowanej pozycji
             rzezba.setAttribute('position', `${x} ${y} ${z}`);
             
-            console.log(`Model pojawił się na pozycji: X: ${x.toFixed(2)}, Y: ${y.toFixed(2)}, Z: ${z.toFixed(2)}`);
+            // Warunek: Jeśli pozycja Y jest wyższa niż wysokość oczu widza (1.6m)
+            if (y > 1.6) {
+                // Obracamy model o 180 stopni w osi Z (będzie do góry nogami)
+                rzezba.setAttribute('rotation', '0 0 180');
+                console.log(`[SUFIT] Model nad widzem (Y: ${y.toFixed(2)}m) - obrócono do góry nogami!`);
+            } else {
+                // Standardowa rotacja, jeśli jest na ziemi lub pod widzem
+                rzezba.setAttribute('rotation', '0 0 0');
+                console.log(`[ZPOZYCJONOWANO] Model na standardowej wysokości (Y: ${y.toFixed(2)}m)`);
+            }
         });
     </script>
 
