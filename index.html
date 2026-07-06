@@ -5,36 +5,45 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dom Literatury w Łodzi</title>
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
-    
-    <script>
-        // Rejestracja własnego komponentu o nazwie 'losowa-pozycja'
-        AFRAME.registerComponent('losowa-pozycja', {
-            init: function () {
-                // Definiujemy zakresy losowania (w metrach)
-                const minX = -5, maxX = 5;
-                const minZ = -7, maxZ = -2;
-
-                // Losujemy współrzędne X oraz Z
-                const randomX = Math.random() * (maxX - minX) + minX;
-                const randomZ = Math.random() * (maxZ - minZ) + minZ;
-                const Y = 0.75; // Stała wysokość, żeby cylinder stał na ziemi
-
-                // Ustawiamy nową pozycję elementu
-                this.el.setAttribute('position', `${randomX} ${Y} ${randomZ}`);
-            }
-        });
-    </script>
 </head>
 <body style="margin: 0; overflow: hidden;">
 
     <a-scene webxr="requiredFeatures: local-floor;">
  
-        <a-cylinder losowa-pozycja radius="0.3" height="1.5" color="#FFC65D" shadow></a-cylinder>
+        <a-cylinder id="rzezba" radius="0.3" height="1.5" color="#FFC65D" shadow></a-cylinder>
         
         <a-entity light="type: ambient; intensity: 0.6;"></a-entity>
         <a-entity light="type: directional; castShadow: true; intensity: 0.8;" position="1 4 1"></a-entity>
 
+        <a-entity camera look-controls position="0 1.6 0"></a-entity>
+
     </a-scene>
+
+    <script>
+        // Funkcja losująca liczbę z danego przedziału [min, max]
+        function losujPrzedzial(min, max) {
+            return Math.random() * (max - min) + min;
+        }
+
+        // Czekamy, aż cała scena A-Frame się załaduje
+        document.querySelector('a-scene').addEventListener('loaded', function () {
+            const rzezba = document.getElementById('rzezba');
+
+            // Losujemy pozycje w metrach od widza (0, 1.6, 0)
+            // X: od -5 (lewo) do 5 (prawo)
+            // Y: od -3 (głęboko pod widzem) do 5 (wysoko nad widzem)
+            // Z: od -5 (przed widzem) do 5 (za widzem)
+            const x = losujPrzedzial(-5, 5);
+            const y = losujPrzedzial(-3, 5);
+            const z = losujPrzedzial(-5, 5);
+
+            // Ustawiamy wylosowaną pozycję dla rzeźby
+            rzezba.setAttribute('position', `${x} ${y} ${z}`);
+            
+            // Opcjonalnie: logowanie w konsoli, żebyś widział, gdzie tym razem trafiła
+            console.log(`Rzeźba pojawiła się na pozycji: X: ${x.toFixed(2)}, Y: ${y.toFixed(2)}, Z: ${z.toFixed(2)}`);
+        });
+    </script>
 
 </body>
 </html>
