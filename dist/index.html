@@ -5,6 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Prawdziwe AR (WebXR) - Chodzenie wokół obiektów</title>
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+    
+    <style>
+        /* Styl, który uwalnia przycisk AR spod znaku wodnego */
+        .a-enter-vr {
+            bottom: 80px !important; /* Przesuwa przycisk w górę (domyślnie jest 20px) */
+            right: 20px !important;  /* Odstęp od prawej krawędzi */
+        }
+    </style>
 </head>
 <body style="margin: 0; overflow: hidden;">
 
@@ -17,7 +25,7 @@
         <a-entity light="type: ambient; intensity: 0.6;"></a-entity>
         <a-entity light="type: directional; castShadow: true; intensity: 0.8;" position="1 4 1"></a-entity>
 
-        </a-scene>
+    </a-scene>
 
 </body>
 </html>
