@@ -11,10 +11,12 @@
     <a-scene webxr="requiredFeatures: local-floor;">
         
         <a-assets>
-            <a-asset-item id="model-rzeźby" src="https://cdn.tinyglb.com/models/1ee4ff430e044f5bb446268700baf32b.glb"></a-asset-item>
+            <a-asset-item id="model-rzezby" src="https://cdn.tinyglb.com/models/1ee4ff430e044f5bb446268700baf32b.glb"></a-asset-item>
         </a-assets>
  
-        <a-gltf-model id="rzezba" src="#model-rzeźby" shadow></a-gltf-model>
+        <a-gltf-model id="rzezba" src="#model-rzezby" shadow></a-gltf-model>
+        
+        <a-sky color="#ececec"></a-sky>
         
         <a-entity light="type: ambient; intensity: 0.6;"></a-entity>
         <a-entity light="type: directional; castShadow: true; intensity: 0.8;" position="1 4 1"></a-entity>
@@ -31,21 +33,19 @@
         document.querySelector('a-scene').addEventListener('loaded', function () {
             const rzezba = document.getElementById('rzezba');
 
-            // Losowanie pozycji (X, Y, Z)
-            const x = losujPrzedzial(-5, 5);
-            const y = losujPrzedzial(-3, 5);
-            const z = losujPrzedzial(-5, 5);
+            // Losowanie pozycji (Z zmienione na ujemne -5 do -2, żeby model był PRZED kamerą)
+            const x = losujPrzedzial(-2, 2);
+            const y = losujPrzedzial(-1, 4);
+            const z = losujPrzedzial(-5, -2); // W osi Z wartości ujemne to przestrzeń przed widzem
 
             // Ustawienie wylosowanej pozycji
             rzezba.setAttribute('position', `${x} ${y} ${z}`);
             
-            // Warunek: Jeśli pozycja Y jest wyższa niż wysokość oczu widza (1.6m)
+            // Warunek obrotu (wysokość oczu to 1.6m)
             if (y > 1.6) {
-                // Obracamy model o 180 stopni w osi Z (będzie do góry nogami)
                 rzezba.setAttribute('rotation', '0 0 180');
                 console.log(`[SUFIT] Model nad widzem (Y: ${y.toFixed(2)}m) - obrócono do góry nogami!`);
             } else {
-                // Standardowa rotacja, jeśli jest na ziemi lub pod widzem
                 rzezba.setAttribute('rotation', '0 0 0');
                 console.log(`[ZPOZYCJONOWANO] Model na standardowej wysokości (Y: ${y.toFixed(2)}m)`);
             }
