@@ -5,11 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dom Literatury w Łodzi - AR</title>
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/gh/chenzlabs/aframe-ar@master/dist/aframe-ar.js"></script>
 </head>
 <body style="margin: 0; overflow: hidden;">
+
 <a-scene
+    ar
     xr-mode-ui="XRMode: ar"
-    webxr="optionalFeatures: hit-test,local-floor,dom-overlay; overlayElement: body;">
+    renderer="colorManagement:true";>
         
         <a-assets>
             <a-asset-item id="model-rzeźby" src="https://cdn.tinyglb.com/models/1ee4ff430e044f5bb446268700baf32b.glb"></a-asset-item>
