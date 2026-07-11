@@ -3,20 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dom Literatury w Łodzi</title>
+    <title>Dom Literatury w Łodzi - AR</title>
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
 </head>
 <body style="margin: 0; overflow: hidden;">
 
-    <a-scene webxr="requiredFeatures: local-floor;">
+    <a-scene webxr="requiredFeatures: local-floor; referenceSpaceType: local-floor;">
         
         <a-assets>
-            <a-asset-item id="model-rzezby" src="https://cdn.tinyglb.com/models/1ee4ff430e044f5bb446268700baf32b.glb"></a-asset-item>
+            <a-asset-item id="model-rzeźby" src="https://cdn.tinyglb.com/models/1ee4ff430e044f5bb446268700baf32b.glb"></a-assets-item>
         </a-assets>
  
-        <a-gltf-model id="rzezba" src="#model-rzezby" shadow></a-gltf-model>
-        
-        <a-sky color="#ececec"></a-sky>
+        <a-gltf-model id="rzezba" src="#model-rzeźby" position="0 0 -2" shadow></a-gltf-model>
         
         <a-entity light="type: ambient; intensity: 0.6;"></a-entity>
         <a-entity light="type: directional; castShadow: true; intensity: 0.8;" position="1 4 1"></a-entity>
@@ -33,15 +31,16 @@
         document.querySelector('a-scene').addEventListener('loaded', function () {
             const rzezba = document.getElementById('rzezba');
 
-            // Losowanie pozycji (Z zmienione na ujemne -5 do -2, żeby model był PRZED kamerą)
+            // Losowanie pozycji (X, Y, Z)
+            // Zmieniamy losowanie osi Z na wartości ujemne (-1 do -5), aby model ZAWSZE pojawiał się PRZED widzem, a nie za nim.
             const x = losujPrzedzial(-2, 2);
-            const y = losujPrzedzial(-1, 4);
-            const z = losujPrzedzial(-5, -2); // W osi Z wartości ujemne to przestrzeń przed widzem
+            const y = losujPrzedzial(0, 3); // Od ziemi (0) w górę
+            const z = losujPrzedzial(-4, -1.5); // Przed widzem
 
             // Ustawienie wylosowanej pozycji
             rzezba.setAttribute('position', `${x} ${y} ${z}`);
             
-            // Warunek obrotu (wysokość oczu to 1.6m)
+            // Warunek: Jeśli pozycja Y jest wyższa niż wysokość oczu widza (1.6m)
             if (y > 1.6) {
                 rzezba.setAttribute('rotation', '0 0 180');
                 console.log(`[SUFIT] Model nad widzem (Y: ${y.toFixed(2)}m) - obrócono do góry nogami!`);
