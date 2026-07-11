@@ -3,26 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dom Literatury w Łodzi</title>
-    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+    <title>Dom Literatury w Łodzi - AR</title>
+    <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
 </head>
 <body style="margin: 0; overflow: hidden;">
 
-    <a-scene background="color: #87CEEB;">
+    <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
         
         <a-assets>
             <a-asset-item id="model-rzeźby" src="https://cdn.tinyglb.com/models/1ee4ff430e044f5bb446268700baf32b.glb"></a-asset-item>
         </a-assets>
-
-        <!-- Model 3D -->
+ 
         <a-gltf-model id="rzezba" src="#model-rzeźby" shadow></a-gltf-model>
         
-        <!-- Oświetlenie -->
         <a-entity light="type: ambient; intensity: 0.6;"></a-entity>
         <a-entity light="type: directional; castShadow: true; intensity: 0.8;" position="1 4 1"></a-entity>
 
-        <!-- Kamera z kontrolami -->
-        <a-entity camera look-controls position="0 1.6 0"></a-entity>
+        <a-entity camera></a-entity>
 
     </a-scene>
 
@@ -35,8 +33,8 @@
             const rzezba = document.getElementById('rzezba');
 
             const x = losujPrzedzial(-5, 5);
-            const y = losujPrzedzial(-3, 5);
-            const z = losujPrzedzial(-5, 5);
+            const y = losujPrzedzial(-1, 3); // Zmniejszyłem lekko rozrzut Y, żeby model nie uciekał za bardzo pod ziemię
+            const z = losujPrzedzial(-5, -2); // Model losuje się z przodu (ujemne Z), żeby użytkownik go od razu widział
 
             rzezba.setAttribute('position', `${x} ${y} ${z}`);
             
@@ -49,6 +47,5 @@
             }
         });
     </script>
-
 </body>
 </html>
