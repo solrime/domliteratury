@@ -6,7 +6,7 @@
     <title>Dom Literatury w Łodzi</title>
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
     <style>
-        /* Styl dla wideo z kamery – wypełnia cały ekran i jest pod sceną 3D */
+        /* Styl dla wideo z kamery */
         #webcam {
             position: fixed;
             top: 0;
@@ -16,6 +16,18 @@
             object-fit: cover;
             z-index: -1;
         }
+        
+        /* NOWOŚĆ: Styl dla logo w prawym górnym rogu */
+        #ekran-logo {
+            position: fixed;
+            top: 20px;       /* Odstęp od góry */
+            right: 20px;     /* Odstęp od prawej krawędzi */
+            width: 120px;    /* Szerokość logo (możesz zmienić wg potrzeb) */
+            height: auto;    /* Automatyczna wysokość, żeby nie popsuć proporcji */
+            z-index: 10;     /* Wyższy z-index, żeby logo było na samym wierzchu, nad sceną 3D */
+            pointer-events: none; /* Sprawia, że logo nie blokuje kliknięć myszką/palcem pod spodem */
+        }
+
         body, html {
             margin: 0;
             overflow: hidden;
@@ -26,6 +38,8 @@
     </style>
 </head>
 <body style="margin: 0; overflow: hidden;">
+
+    <img id="ekran-logo" src="logo.png" alt="Logo">
 
     <video id="webcam" autoplay playsinline></video>
 
@@ -45,10 +59,9 @@
     </a-scene>
 
     <script>
-        // Skrypt uruchamiający kamerę użytkownika w tle
+        // Kamera
         const video = document.getElementById('webcam');
         if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-            // "facingMode: environment" wymusza użycie tylnej kamery w telefonie
             navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
                 .then(function(stream) {
                     video.srcObject = stream;
@@ -62,24 +75,20 @@
             return Math.random() * (max - min) + min;
         }
 
+        // Logika losowania pozycji i obracania
         document.querySelector('a-scene').addEventListener('loaded', function () {
             const rzezba = document.getElementById('rzezba');
 
-            // Losowanie pozycji (X, Y, Z)
             const x = losujPrzedzial(-5, 5);
             const y = losujPrzedzial(-3, 5);
             const z = losujPrzedzial(-5, 5);
 
-            // Ustawienie wylosowanej pozycji
             rzezba.setAttribute('position', `${x} ${y} ${z}`);
             
-            // Warunek: Jeśli pozycja Y jest wyższa niż wysokość oczu widza (1.6m)
             if (y > 1.6) {
-                // Obracamy model o 180 stopni w osi Z (będzie do góry nogami)
                 rzezba.setAttribute('rotation', '0 0 180');
                 console.log(`[SUFIT] Model nad widzem (Y: ${y.toFixed(2)}m) - obrócono do góry nogami!`);
             } else {
-                // Standardowa rotacja, jeśli jest na ziemi lub pod widzem
                 rzezba.setAttribute('rotation', '0 0 0');
                 console.log(`[ZPOZYCJONOWANO] Model na standardowej wysokości (Y: ${y.toFixed(2)}m)`);
             }
