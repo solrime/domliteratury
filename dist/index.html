@@ -43,16 +43,7 @@
             // Ustawienie wylosowanej pozycji
             rzezba.setAttribute('position', `${x} ${y} ${z}`);
             
-            // Warunek: Jeśli pozycja Y jest wyższa niż wysokość oczu widza (1.6m)
-            if (y > 1.6) {
-                // Obracamy model o 180 stopni w osi Z (będzie do góry nogami)
-                rzezba.setAttribute('rotation', '0 0 180');
-                console.log(`[SUFIT] Model nad widzem (Y: ${y.toFixed(2)}m) - obrócono do góry nogami!`);
-            } else {
-                // Standardowa rotacja, jeśli jest na ziemi lub pod widzem
-                rzezba.setAttribute('rotation', '0 0 0');
-                console.log(`[ZPOZYCJONOWANO] Model na standardowej wysokości (Y: ${y.toFixed(2)}m)`);
-            }
+          
         });
     </script>
 
