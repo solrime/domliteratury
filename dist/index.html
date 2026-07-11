@@ -3,21 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dom Literatury w Łodzi - AR</title>
+    <title>Dom Literatury w Łodzi</title>
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
 </head>
 <body style="margin: 0; overflow: hidden;">
-<a-scene
-    xr-mode-ui="XRMode: ar"
-    webxr="optionalFeatures: hit-test,local-floor,dom-overlay; overlayElement: body;">
+
+    <a-scene webxr="requiredFeatures: local-floor;">
         
         <a-assets>
-            <a-asset-item id="model-rzeźby" src="https://cdn.tinyglb.com/models/1ee4ff430e044f5bb446268700baf32b.glb"></a-asset-item>
+            <a-asset-item id="model-rzeźby" src="https://cdn.tinyglb.com/models/481e13724ab6490da93bfedd809e5d8c.glb"></a-asset-item>
         </a-assets>
  
         <a-gltf-model id="rzezba" src="#model-rzeźby" shadow></a-gltf-model>
         
-        <a-entity light="type: ambient; intensity: 0.8;"></a-entity>
+        <a-entity light="type: ambient; intensity: 0.6;"></a-entity>
         <a-entity light="type: directional; castShadow: true; intensity: 0.8;" position="1 4 1"></a-entity>
 
         <a-entity camera look-controls position="0 1.6 0"></a-entity>
@@ -33,15 +32,23 @@
             const rzezba = document.getElementById('rzezba');
 
             // Losowanie pozycji (X, Y, Z)
-            // Zmieniono domyślny przedział Z na ujemny (-1 do -4), żeby model nie pojawiał się ZA plecami widza na starcie
-            const x = losujPrzedzial(-2, 2);
-            const y = losujPrzedzial(0, 3); // Zmniejszono rozrzut w dół, by model nie wpadał pod podłogę
-            const z = losujPrzedzial(-1, -4); 
+            const x = losujPrzedzial(-5, 5);
+            const y = losujPrzedzial(-3, 5);
+            const z = losujPrzedzial(-5, 5);
 
             // Ustawienie wylosowanej pozycji
             rzezba.setAttribute('position', `${x} ${y} ${z}`);
             
-          
+            // Warunek: Jeśli pozycja Y jest wyższa niż wysokość oczu widza (1.6m)
+            if (y > 1.6) {
+                // Obracamy model o 180 stopni w osi Z (będzie do góry nogami)
+                rzezba.setAttribute('rotation', '0 0 180');
+                console.log(`[SUFIT] Model nad widzem (Y: ${y.toFixed(2)}m) - obrócono do góry nogami!`);
+            } else {
+                // Standardowa rotacja, jeśli jest na ziemi lub pod widzem
+                rzezba.setAttribute('rotation', '0 0 0');
+                console.log(`[ZPOZYCJONOWANO] Model na standardowej wysokości (Y: ${y.toFixed(2)}m)`);
+            }
         });
     </script>
 
