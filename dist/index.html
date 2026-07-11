@@ -6,7 +6,6 @@
     <title>Dom Literatury w Łodzi</title>
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
     <style>
-        /* Styl dla wideo z kamery – wypełnia cały ekran i jest pod sceną 3D */
         #webcam {
             position: fixed;
             top: 0;
@@ -35,55 +34,86 @@
             <a-asset-item id="model-rzeźby" src="https://cdn.tinyglb.com/models/1ee4ff430e044f5bb446268700baf32b.glb"></a-asset-item>
         </a-assets>
  
-        <a-gltf-model id="rzezba" src="#model-rzeźby" shadow></a-gltf-model>
+        <a-gltf-model id="rzezba" class="clickable" src="#model-rzeźby" shadow visible="false"></a-gltf-model>
         
         <a-entity light="type: ambient; intensity: 0.6;"></a-entity>
         <a-entity light="type: directional; castShadow: true; intensity: 0.8;" position="1 4 1"></a-entity>
 
-        <a-entity camera look-controls position="0 1.6 0"></a-entity>
+        <a-entity camera look-controls position="0 1.6 0">
+            <a-entity cursor="fuse: false;"
+                      position="0 0 -1"
+                      geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03"
+                      material="color: white; shader: flat"
+                      raycaster="objects: .clickable">
+            </a-entity>
+        </a-entity>
 
     </a-scene>
 
     <script>
-        // Skrypt uruchamiający kamerę użytkownika w tle
         const video = document.getElementById('webcam');
-        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-            // "facingMode: environment" wymusza użycie tylnej kamery w telefonie
-            navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
-                .then(function(stream) {
-                    video.srcObject = stream;
-                })
-                .catch(function(error) {
-                    console.error("Błąd dostępu do kamery: ", error);
-                });
-        }
+        const rzezba = document.getElementById('rzezba');
+        
+        // Zmienna do śledzenia aktualnego obrotu wokół osi Y
+        let aktualnyObrotY = 0; 
+        let czyNaSuficie = false;
 
         function losujPrzedzial(min, max) {
             return Math.random() * (max - min) + min;
         }
 
-        document.querySelector('a-scene').addEventListener('loaded', function () {
-            const rzezba = document.getElementById('rzezba');
-
-            // Losowanie pozycji (X, Y, Z)
+        function zainicjujRzezbe() {
             const x = losujPrzedzial(-5, 5);
             const y = losujPrzedzial(-3, 5);
             const z = losujPrzedzial(-5, 5);
 
-            // Ustawienie wylosowanej pozycji
             rzezba.setAttribute('position', `${x} ${y} ${z}`);
             
-            // Warunek: Jeśli pozycja Y jest wyższa niż wysokość oczu widza (1.6m)
+            // Sprawdzamy stan początkowy (sufit vs podłoga)
             if (y > 1.6) {
-                // Obracamy model o 180 stopni w osi Z (będzie do góry nogami)
-                rzezba.setAttribute('rotation', '0 0 180');
+                czyNaSuficie = true;
+                rzezba.setAttribute('rotation', `0 0 180`);
                 console.log(`[SUFIT] Model nad widzem (Y: ${y.toFixed(2)}m) - obrócono do góry nogami!`);
             } else {
-                // Standardowa rotacja, jeśli jest na ziemi lub pod widzem
-                rzezba.setAttribute('rotation', '0 0 0');
+                czyNaSuficie = false;
+                rzezba.setAttribute('rotation', `0 0 0`);
                 console.log(`[ZPOZYCJONOWANO] Model na standardowej wysokości (Y: ${y.toFixed(2)}m)`);
             }
+
+            rzezba.setAttribute('visible', 'true');
+        }
+
+        // --- NOWOŚĆ: Funkcja obracania po dotknięciu ---
+        rzezba.addEventListener('click', function () {
+            // Zwiększamy obrót o 45 stopni przy każdym dotknięciu
+            aktualnyObrotY += 45; 
+
+            // Musimy zachować Twój warunek dla osi Z (jeśli jest na suficie, Z musi być 180)
+            const rotacjaZ = czyNaSuficie ? 180 : 0;
+            
+            // Ustawiamy nową rotację (X zostaje 0, Y się zmienia, Z zależy od sufitu)
+            rzezba.setAttribute('rotation', `0 ${aktualnyObrotY} ${rotacjaZ}`);
+            
+            console.log(`[OBRÓT] Obrócono rzeźbę na osi Y o: ${aktualnyObrotY}°`);
         });
+
+        // Odpalamy kamerę
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+                .then(function(stream) {
+                    video.srcObject = stream;
+                    
+                    const scene = document.querySelector('a-scene');
+                    if (scene.hasLoaded) {
+                        zainicjujRzezbe();
+                    } else {
+                        scene.addEventListener('loaded', zainicjujRzezbe);
+                    }
+                })
+                .catch(function(error) {
+                    console.error("Błąd dostępu do kamery lub użytkownik odmówił: ", error);
+                });
+        }
     </script>
 
 </body>
