@@ -7,25 +7,9 @@
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
 </head>
 <body style="margin: 0; overflow: hidden;">
-
-  <a-scene
-  embedded
-  vr-mode-ui="enabled: false"
-renderer="
-antialias: true;
-precision: high;
-powerPreference: high-performance;
-sortObjects: true;
-logarithmicDepthBuffer: true; /* Pomaga w stabilizacji modelu przy obrotach */
-"
-  arjs="
-    trackingMethod: best;
-    sourceType: webcam;
-    detectionMode: mono_and_matrix;
-    matrixCodeType: 3x3;
-    debugUIEnabled: false;
-    labelingMode: black_region; /* Poprawia detekcję czarnej ramki markera */
-  ">
+<a-scene
+    xr-mode-ui="XRMode: ar"
+    webxr="optionalFeatures: hit-test,local-floor,dom-overlay; overlayElement: body;">
         
         <a-assets>
             <a-asset-item id="model-rzeźby" src="https://cdn.tinyglb.com/models/1ee4ff430e044f5bb446268700baf32b.glb"></a-asset-item>
