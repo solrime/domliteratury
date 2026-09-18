@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Dom Literatury w Łodzi</title>
 
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
 
     <style>
-        /* Kamera w tle */
+        /* Kamera – wypełnia cały ekran i znajduje się pod sceną 3D */
         #webcam {
             position: fixed;
             top: 0;
@@ -27,115 +26,64 @@
             width: 100%;
             height: 100%;
             background-color: transparent;
-            font-family: Arial, sans-serif;
         }
 
-        /* Interfejs nad sceną A-Frame */
-        #interface {
+        /* Instrukcja dla użytkownika */
+        #instrukcja {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
+            top: 25px;
+            left: 50%;
+            transform: translateX(-50%);
             z-index: 9999;
 
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            width: calc(100% - 40px);
+            max-width: 600px;
 
-            pointer-events: none;
-        }
-
-        /* Instrukcja */
-        #instrukcja {
-            margin-top: 20px;
-            padding: 12px 18px;
-
-            max-width: 80%;
+            box-sizing: border-box;
+            padding: 14px 20px;
 
             background: rgba(0, 0, 0, 0.65);
             color: white;
 
-            border-radius: 12px;
-
-            text-align: center;
-            font-size: 16px;
-            line-height: 1.4;
-
-            backdrop-filter: blur(5px);
-            -webkit-backdrop-filter: blur(5px);
-        }
-
-        /* Przycisk resetowania */
-        #resetButton {
-            margin-top: 12px;
-
-            padding: 12px 22px;
-
-            border: none;
-            border-radius: 30px;
-
-            background: rgba(255, 255, 255, 0.9);
-            color: #111;
-
-            font-size: 16px;
+            font-family: Arial, sans-serif;
+            font-size: 18px;
             font-weight: bold;
+            line-height: 1.4;
+            text-align: center;
 
-            cursor: pointer;
+            border-radius: 14px;
 
-            pointer-events: auto;
-
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
-        }
-
-        #resetButton:active {
-            transform: scale(0.95);
+            /* Tekst nie blokuje sterowania sceną */
+            pointer-events: none;
         }
     </style>
 </head>
 
 <body>
 
-    <!-- Kamera -->
-    <video
-        id="webcam"
-        autoplay
-        playsinline>
-    </video>
+    <!-- Obraz z kamery -->
+    <video id="webcam" autoplay playsinline></video>
 
-
-    <!-- Interfejs użytkownika -->
-    <div id="interface">
-
-        <div id="instrukcja">
-            🔎 Rozejrzyj się dookoła!<br>
-            Spójrz również <strong>w górę i w dół</strong>,
-            aby znaleźć <strong>Płotkę</strong>.
-        </div>
-
-        <button id="resetButton">
-            ↻ Resetuj położenie
-        </button>
-
+    <!-- Instrukcja -->
+    <div id="instrukcja">
+        🔎 Rozejrzyj się dookoła!<br>
+        Spójrz również w górę i w dół, aby znaleźć płotkę.
     </div>
-
 
     <!-- Scena A-Frame -->
     <a-scene
         webxr="requiredFeatures: local-floor;"
-        style="background: transparent;">
+        style="background: transparent;"
+    >
 
         <a-assets>
-
             <a-asset-item
                 id="model-rzeźby"
                 src="https://cdn.tinyglb.com/models/6ef2003d31bf4a628b14565e635115d0.glb">
             </a-asset-item>
-
         </a-assets>
 
-
         <!-- Oświetlenie -->
-
         <a-light
             type="ambient"
             color="#FFFFFF"
@@ -149,18 +97,14 @@
             position="-2 4 3">
         </a-light>
 
-
-        <!-- Model Płotki -->
-
+        <!-- Model płotki -->
         <a-gltf-model
             id="rzezba"
             src="#model-rzeźby"
             shadow>
         </a-gltf-model>
 
-
-        <!-- Kamera użytkownika -->
-
+        <!-- Kamera -->
         <a-entity
             camera
             look-controls
@@ -169,12 +113,10 @@
 
     </a-scene>
 
-
     <script>
-
-        /* =========================================
-           KAMERA TELEFONU
-        ========================================= */
+        // =========================================================
+        // URUCHOMIENIE KAMERY TELEFONU
+        // =========================================================
 
         const video = document.getElementById('webcam');
 
@@ -182,139 +124,90 @@
             navigator.mediaDevices &&
             navigator.mediaDevices.getUserMedia
         ) {
-
             navigator.mediaDevices.getUserMedia({
                 video: {
                     facingMode: "environment"
                 }
             })
-
             .then(function(stream) {
-
                 video.srcObject = stream;
-
             })
-
             .catch(function(error) {
-
                 console.error(
                     "Błąd dostępu do kamery:",
                     error
                 );
-
             });
-
         }
 
 
-        /* =========================================
-           LOSOWANIE
-        ========================================= */
+        // =========================================================
+        // LOSOWANIE LICZBY Z PRZEDZIAŁU
+        // =========================================================
 
         function losujPrzedzial(min, max) {
-
             return Math.random() * (max - min) + min;
-
         }
 
 
-        /* =========================================
-           USTAWIANIE NOWEJ POZYCJI PŁOTKI
-        ========================================= */
-
-        function ustawNowaPozycje() {
-
-            const rzezba =
-                document.getElementById('rzezba');
-
-
-            /* Losowanie pozycji */
-
-            const x = losujPrzedzial(-5, 5);
-            const y = losujPrzedzial(-3, 5);
-            const z = losujPrzedzial(-5, 5);
-
-
-            /* Ustawienie pozycji */
-
-            rzezba.setAttribute(
-                'position',
-                `${x} ${y} ${z}`
-            );
-
-
-            /* Jeśli Płotka znajduje się
-               nad wysokością oczu */
-
-            if (y > 1.6) {
-
-                rzezba.setAttribute(
-                    'rotation',
-                    '0 0 180'
-                );
-
-                console.log(
-                    `[SUFIT] Płotka nad widzem
-                    Y: ${y.toFixed(2)} m`
-                );
-
-            }
-
-            else {
-
-                rzezba.setAttribute(
-                    'rotation',
-                    '0 0 0'
-                );
-
-                console.log(
-                    `[POZYCJA] Płotka:
-                    X: ${x.toFixed(2)}
-                    Y: ${y.toFixed(2)}
-                    Z: ${z.toFixed(2)}`
-                );
-
-            }
-
-        }
-
-
-        /* =========================================
-           START SCENY
-        ========================================= */
+        // =========================================================
+        // LOSOWANIE POZYCJI PŁOTKI
+        // =========================================================
 
         document
             .querySelector('a-scene')
-            .addEventListener(
-                'loaded',
-                function () {
+            .addEventListener('loaded', function () {
 
-                    /* Pierwsze losowanie */
+                const rzezba =
+                    document.getElementById('rzezba');
 
-                    ustawNowaPozycje();
+                // Losowanie pozycji X, Y oraz Z
+                const x = losujPrzedzial(-5, 5);
+                const y = losujPrzedzial(-3, 5);
+                const z = losujPrzedzial(-5, 5);
 
+                // Ustawienie pozycji modelu
+                rzezba.setAttribute(
+                    'position',
+                    `${x} ${y} ${z}`
+                );
+
+
+                // =================================================
+                // SPRAWDZENIE WYSOKOŚCI MODELU
+                // =================================================
+
+                // Jeśli model znajduje się powyżej
+                // wysokości oczu użytkownika (1.6 m)
+                if (y > 1.6) {
+
+                    // Obracamy płotkę do góry nogami
+                    rzezba.setAttribute(
+                        'rotation',
+                        '0 0 180'
+                    );
+
+                    console.log(
+                        `[SUFIT] Model nad widzem ` +
+                        `(Y: ${y.toFixed(2)}m) ` +
+                        `- obrócono do góry nogami!`
+                    );
+
+                } else {
+
+                    // Standardowa orientacja
+                    rzezba.setAttribute(
+                        'rotation',
+                        '0 0 0'
+                    );
+
+                    console.log(
+                        `[ZPOZYCJONOWANO] ` +
+                        `Model na standardowej wysokości ` +
+                        `(Y: ${y.toFixed(2)}m)`
+                    );
                 }
-            );
-
-
-        /* =========================================
-           PRZYCISK RESET
-        ========================================= */
-
-        document
-            .getElementById('resetButton')
-            .addEventListener(
-                'click',
-                function () {
-
-                    /* Losujemy nową pozycję
-                       bez przeładowania strony */
-
-                    ustawNowaPozycje();
-
-                }
-            );
-
+            });
     </script>
 
 </body>
