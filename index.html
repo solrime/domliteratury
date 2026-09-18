@@ -113,122 +113,39 @@
 
     </a-scene>
 
-    <script>
-        // =========================================================
-        // URUCHOMIENIE KAMERY TELEFONU
-        // =========================================================
+   <script>
+    function losujPrzedzial(min, max) {
+        return Math.random() * (max - min) + min;
+    }
 
-        const video = document.getElementById('webcam');
+    document.querySelector('a-scene').addEventListener('loaded', function () {
+        const rzezba = document.getElementById('rzezba');
 
-        if (
-            navigator.mediaDevices &&
-            navigator.mediaDevices.getUserMedia
-        ) {
-            navigator.mediaDevices.getUserMedia({
-                video: {
-                    facingMode: "environment"
-                }
-            })
-            .then(function(stream) {
-                video.srcObject = stream;
-            })
-            .catch(function(error) {
-                console.error(
-                    "Błąd dostępu do kamery:",
-                    error
-                );
-            });
+        // Losowanie pozycji (X, Y, Z)
+        const x = losujPrzedzial(-5, 5);
+        const y = losujPrzedzial(-3, 5);
+        const z = losujPrzedzial(-5, 5);
+
+        rzezba.setAttribute('position', `${x} ${y} ${z}`);
+
+        // Losowanie wielkości: od obecnej (1x) do dwa razy większej (2x)
+        const skala = losujPrzedzial(1, 2);
+        rzezba.setAttribute('scale', `${skala} ${skala} ${skala}`);
+
+        // Jeśli model znajduje się powyżej wysokości oczu
+        if (y > 1.6) {
+            rzezba.setAttribute('rotation', '0 0 180');
+            console.log(
+                `[SUFIT] Y: ${y.toFixed(2)}m | Skala: ${skala.toFixed(2)}x`
+            );
+        } else {
+            rzezba.setAttribute('rotation', '0 0 0');
+            console.log(
+                `[ZPOZYCJONOWANO] Y: ${y.toFixed(2)}m | Skala: ${skala.toFixed(2)}x`
+            );
         }
-
-
-        // =========================================================
-        // LOSOWANIE LICZBY Z PRZEDZIAŁU
-        // =========================================================
-
-        function losujPrzedzial(min, max) {
-            return Math.random() * (max - min) + min;
-        }
-
-
-        // =========================================================
-        // LOSOWANIE POZYCJI PŁOTKI
-        // =========================================================
-
-        document
-            .querySelector('a-scene')
-            .addEventListener('loaded', function () {
-
-                const rzezba =
-                    document.getElementById('rzezba');
-
-
-                // =================================================
-                // LOSOWA POZYCJA
-                // =================================================
-
-                const x = losujPrzedzial(-5, 5);
-                const y = losujPrzedzial(-3, 5);
-                const z = losujPrzedzial(-5, 5);
-
-                rzezba.setAttribute(
-                    'position',
-                    `${x} ${y} ${z}`
-                );
-
-
-                // =================================================
-                // OGRANICZONY LOSOWY OBRÓT
-                // =================================================
-                //
-                // Model może patrzeć trochę w lewo lub w prawo,
-                // ale nigdy nie odwróci się całkowicie tyłem.
-                //
-                // Zakres:
-                // -70° ---- 0° ---- +70°
-                //
-
-                const obrotY = losujPrzedzial(-70, 70);
-
-
-                // =================================================
-                // SPRAWDZENIE WYSOKOŚCI MODELU
-                // =================================================
-
-                if (y > 1.6) {
-
-                    // Model jest nad użytkownikiem.
-                    // Obracamy go do góry nogami,
-                    // ale nadal zachowujemy ograniczony obrót Y.
-
-                    rzezba.setAttribute(
-                        'rotation',
-                        `0 ${obrotY} 180`
-                    );
-
-                    console.log(
-                        `[SUFIT] Model nad widzem ` +
-                        `(Y: ${y.toFixed(2)}m), ` +
-                        `obrót Y: ${obrotY.toFixed(1)}°`
-                    );
-
-                } else {
-
-                    // Standardowa orientacja,
-                    // ale z lekkim losowym obrotem.
-
-                    rzezba.setAttribute(
-                        'rotation',
-                        `0 ${obrotY} 0`
-                    );
-
-                    console.log(
-                        `[ZPOZYCJONOWANO] ` +
-                        `Y: ${y.toFixed(2)}m, ` +
-                        `obrót Y: ${obrotY.toFixed(1)}°`
-                    );
-                }
-            });
-    </script>
+    });
+</script>
 
 </body>
 </html>
