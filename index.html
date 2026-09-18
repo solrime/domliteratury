@@ -29,19 +29,33 @@
 
     <video id="webcam" autoplay playsinline></video>
 
-    <a-scene webxr="requiredFeatures: local-floor;" style="background: transparent;">
-        
-        <a-assets>
-            <a-asset-item id="model-rzeźby" src="https://cdn.tinyglb.com/models/6ef2003d31bf4a628b14565e635115d0.glb"></a-asset-item>
-        </a-assets>
- 
-        <a-gltf-model id="rzezba" src="#model-rzeźby" shadow></a-gltf-model>
-        
+   <a-scene webxr="requiredFeatures: local-floor;" style="background: transparent;">
 
+    <a-assets>
+        <a-asset-item
+            id="model-rzeźby"
+            src="https://cdn.tinyglb.com/models/6ef2003d31bf4a628b14565e635115d0.glb">
+        </a-asset-item>
+    </a-assets>
 
-        <a-entity camera look-controls position="0 1.6 0"></a-entity>
+    <a-light type="ambient" color="#FFFFFF" intensity="1.8"></a-light>
 
-    </a-scene>
+    <a-light
+        type="directional"
+        color="#FFFFFF"
+        intensity="2.5"
+        position="-2 4 3">
+    </a-light>
+
+    <a-gltf-model
+        id="rzezba"
+        src="#model-rzeźby"
+        shadow>
+    </a-gltf-model>
+
+    <a-entity camera look-controls position="0 1.6 0"></a-entity>
+
+</a-scene>
 
     <script>
         // Skrypt uruchamiający kamerę użytkownika w tle
