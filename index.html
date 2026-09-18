@@ -161,12 +161,15 @@
                 const rzezba =
                     document.getElementById('rzezba');
 
-                // Losowanie pozycji X, Y oraz Z
+
+                // =================================================
+                // LOSOWA POZYCJA
+                // =================================================
+
                 const x = losujPrzedzial(-5, 5);
                 const y = losujPrzedzial(-3, 5);
                 const z = losujPrzedzial(-5, 5);
 
-                // Ustawienie pozycji modelu
                 rzezba.setAttribute(
                     'position',
                     `${x} ${y} ${z}`
@@ -174,37 +177,54 @@
 
 
                 // =================================================
+                // OGRANICZONY LOSOWY OBRÓT
+                // =================================================
+                //
+                // Model może patrzeć trochę w lewo lub w prawo,
+                // ale nigdy nie odwróci się całkowicie tyłem.
+                //
+                // Zakres:
+                // -70° ---- 0° ---- +70°
+                //
+
+                const obrotY = losujPrzedzial(-70, 70);
+
+
+                // =================================================
                 // SPRAWDZENIE WYSOKOŚCI MODELU
                 // =================================================
 
-                // Jeśli model znajduje się powyżej
-                // wysokości oczu użytkownika (1.6 m)
                 if (y > 1.6) {
 
-                    // Obracamy płotkę do góry nogami
+                    // Model jest nad użytkownikiem.
+                    // Obracamy go do góry nogami,
+                    // ale nadal zachowujemy ograniczony obrót Y.
+
                     rzezba.setAttribute(
                         'rotation',
-                        '0 0 180'
+                        `0 ${obrotY} 180`
                     );
 
                     console.log(
                         `[SUFIT] Model nad widzem ` +
-                        `(Y: ${y.toFixed(2)}m) ` +
-                        `- obrócono do góry nogami!`
+                        `(Y: ${y.toFixed(2)}m), ` +
+                        `obrót Y: ${obrotY.toFixed(1)}°`
                     );
 
                 } else {
 
-                    // Standardowa orientacja
+                    // Standardowa orientacja,
+                    // ale z lekkim losowym obrotem.
+
                     rzezba.setAttribute(
                         'rotation',
-                        '0 0 0'
+                        `0 ${obrotY} 0`
                     );
 
                     console.log(
                         `[ZPOZYCJONOWANO] ` +
-                        `Model na standardowej wysokości ` +
-                        `(Y: ${y.toFixed(2)}m)`
+                        `Y: ${y.toFixed(2)}m, ` +
+                        `obrót Y: ${obrotY.toFixed(1)}°`
                     );
                 }
             });
